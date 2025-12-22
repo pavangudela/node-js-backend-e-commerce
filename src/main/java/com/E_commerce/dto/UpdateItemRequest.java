@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateItemRequest {
+    private  Long  variantId;
     Integer qty;
 }

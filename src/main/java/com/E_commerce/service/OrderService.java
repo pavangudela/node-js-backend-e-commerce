@@ -6,7 +6,6 @@ import com.E_commerce.dto.PlaceOrderRequest;
 import com.E_commerce.modal.Cart;
 import com.E_commerce.modal.*;
 import com.E_commerce.repo.*;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +25,8 @@ public class OrderService {
    private AddressService addressService;
     @Autowired
 private CartRepo cartRepo;
+    @Autowired
+    private CartItemRepo cartItemRepo;
 @Autowired
 private UserRepo userRepo;
 @Autowired
@@ -39,11 +40,11 @@ private AddressRepo addressRepo;
 
 @Transactional
   public ResponseEntity<OrderResponse> placeNewOrder(String userMail,    PlaceOrderRequest request){
-    if(request.getPaymentType().isEmpty()||request.getAddressId()==0){
+    if(request.getPaymentType().isEmpty()||request.getAddressId()==null){
         throw   new ResponseStatusException(HttpStatus.BAD_REQUEST,"request body values are must be not empty");
     }
       User user= userRepo.findByEmail(userMail).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
-      Address address=addressRepo.findById(request.getAddressId()).orElseThrow(()->new RuntimeException("Address Not Found"));
+      Address address=addressRepo.findById(request.getAddressId()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Address Not Found"));
       Cart cart=cartRepo.findCartByuserId(user.getId()).orElseThrow(()-> new CartEmptyException("Cart Not Found"));
       if(cart.getItems().isEmpty()){
           throw new CartEmptyException("Cart Is Empty");
@@ -66,11 +67,11 @@ Order order  =new Order();
 
     System.out.println(order);
     List<OrderItem>items=new ArrayList<>();
-      for(CartItems item :cart.getItems()){
+      for(CartItem item :cart.getItems()){
               OrderItem oi=new OrderItem();
               oi.setOrder(order);
               oi.setPrice(item.getUnitPrice());
-              oi.setProduct(item.getProduct());
+               oi.setVariant(item.getVariant());
               oi.setQuantity(item.getQuantity());
               oi.setLineTotal(item.getLineTotal());
               if(request.getPaymentType().equals("COD")){
@@ -87,8 +88,7 @@ Order order  =new Order();
       orderRepo.save(order);
 
            System.out.println(order);
-        cart.getItems().clear();
-        cartRepo.save(cart);
+          cartItemRepo.deleteByCartId(cart.getId());
         return ResponseEntity.ok(toResponse(order));
 
 
@@ -96,7 +96,7 @@ Order order  =new Order();
   @Transactional
   public ResponseEntity<OrderResponse> cancelOrderItem( String userMail,long orderId, long itemId ){
     User user= userRepo.findByEmail(userMail).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
-    Order order=orderRepo.getReferenceById(orderId);
+    Order order=orderRepo.findById(orderId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
     if(!order.getUser().getId().equals(user.getId())){
         throw  new IllegalArgumentException("this is not your order");
@@ -104,7 +104,7 @@ Order order  =new Order();
     if(order.getItems().isEmpty()){
         throw new IllegalArgumentException("Order items are empty");
     }
-    OrderItem item=itemRepo.getReferenceById(itemId);
+    OrderItem item=itemRepo.findById(itemId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "OrderItem not found"));
 
     if(!item.getOrder().equals(order)){
         throw new IllegalArgumentException("this is not your order item");
@@ -113,15 +113,16 @@ Order order  =new Order();
         throw  new IllegalArgumentException("item already" +item.getStatus()+ "not possible to cancel ");
     }
      item.setStatus(OrderStatus.CANCELLED);
-    boolean allCanceled=true;
-    for(OrderItem oi:order.getItems()){
-
-        if(!oi.getStatus().equals(OrderStatus.CANCELLED)){
-            allCanceled=false;
-        }
-
-    }
-    if(allCanceled){
+   boolean activeItems= itemRepo.existsByOrderIdAndStatusNot(orderId,OrderStatus.CANCELLED);
+//    boolean allCanceled=true;
+//    for(OrderItem oi:order.getItems()){
+//
+//        if(!oi.getStatus().equals(OrderStatus.CANCELLED)){
+//            allCanceled=false;
+//        }
+//
+//    }
+    if(!activeItems){
         order.setStatus(OrderStatus.CANCELLED);
     }
 orderRepo.save(order);
@@ -129,21 +130,23 @@ orderRepo.save(order);
   }
   @Transactional
   public ResponseEntity<OrderResponse> updateOrderStatus(  long orderId ,OrderStatus status){
-    Order order=orderRepo.getReferenceById(orderId);
+      Order order=orderRepo.findById(orderId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
      order.setStatus(status);
-     for(OrderItem item:order.getItems()){
-         item.setStatus(status);
-     }
+     itemRepo.updateStatusByOrderId(status,orderId);
+//     for(OrderItem item:order.getItems()){
+//         item.setStatus(status);
+//     }
 orderRepo.save(order);
      return ResponseEntity.ok().body(toResponse(order));
   }
   @Transactional
   public ResponseEntity<OrderResponse> updateOrderItemStatus(long orderId,long itemId,OrderStatus status){
 
-    Order order=orderRepo.getReferenceById(orderId);
+    Order order=orderRepo.findById(orderId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
-    OrderItem item=itemRepo.getReferenceById(itemId);
-       if(!item.getOrder().getId().equals(order.getId())){
+    OrderItem item=itemRepo.findById(itemId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "OrderItem not found"));
+
+      if(!item.getOrder().getId().equals(order.getId())){
           throw new IllegalArgumentException("item not belongs to this order");
        }
     item.setStatus(status);
@@ -184,7 +187,7 @@ orderRepo.save(order);
     if(!role.equals("ROLE_ADMIN")){
         throw new AccessDeniedException("Admin only Access this");
     }
-      Order order = orderRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order Not Found"));
+     Order order = orderRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order Not Found"));
       return  ResponseEntity.ok().body(toResponse(order));
   }
 
@@ -192,9 +195,11 @@ orderRepo.save(order);
       List<OrderItemResponse> items=order.getItems().stream().map(oi->
               new OrderItemResponse(
                       oi.getId(),
-                      oi.getProduct().getId(),
-                      oi.getProduct().getName(),
-                      oi.getProduct().getImageUrl(),
+                      oi.getVariant().getProduct().getId(),
+                      oi.getVariant().getId(),
+                      oi.getVariant().getProduct().getName(),
+                      oi.getColor(),
+                      oi.getSize(),
                       oi.getPrice(),
                       oi.getQuantity(),
                       oi.getLineTotal(),

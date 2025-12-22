@@ -27,17 +27,17 @@ public class CartController {
 
     @PostMapping("/item")
      public ResponseEntity<CartResponse> addItem(@RequestBody AddItemRequest request){
-         return cartService.addItem(jwtUser.getMail(),request.getProductId(),request.getQty());
+         return cartService.addItem(jwtUser.getMail(), request);
      }
-     @PatchMapping("/item/{itemId}")
-    public ResponseEntity<CartResponse> updateQty(@PathVariable long itemId, @RequestBody UpdateItemRequest request){
-        System.out.println(itemId+"    . "+request.getQty());
-        return cartService.updateQuantity(jwtUser.getMail(), itemId, request.getQty());
+     @PatchMapping("/item/{productId}")
+    public ResponseEntity<CartResponse> updateQty(@PathVariable long productId, @RequestBody UpdateItemRequest request){
+//        System.out.println(itemId+"    . "+request.getQty());
+        return cartService.updateQuantity(jwtUser.getMail(), productId, request);
      }
-@DeleteMapping("/item/{itemId}")
-    public ResponseEntity<CartResponse>  removeItem(@PathVariable long itemId ){
+@DeleteMapping("/item/{productId}")
+    public ResponseEntity<CartResponse>  removeItem(@PathVariable long productId,@RequestParam  Long variantId){
 
-    return   cartService.removeItem(jwtUser.getMail(), itemId);
+    return   cartService.removeItem(jwtUser.getMail(), productId, variantId);
 
 }
 @DeleteMapping

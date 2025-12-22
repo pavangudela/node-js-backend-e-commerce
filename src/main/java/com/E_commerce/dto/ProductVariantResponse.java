@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddItemRequest {
-    private Long productId;
-    private Long variantId;
-    private Integer qty;
+public class ProductVariantResponse {
+    private Long id;
+    private String color;
+    private String size;
+    private Integer stock;
 }

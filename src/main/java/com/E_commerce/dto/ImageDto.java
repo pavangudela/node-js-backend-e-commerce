@@ -5,10 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AddItemRequest {
-    private Long productId;
-    private Long variantId;
-    private Integer qty;
+@NoArgsConstructor
+public class ImageDto {
+    private String imageUrl;
+    private boolean isPrimary;
 }

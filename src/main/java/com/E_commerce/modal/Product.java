@@ -1,13 +1,13 @@
 package com.E_commerce.modal;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,11 +17,23 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String Name;
+    private String name;
     private String description;
-    private Integer quantity;
+    private Integer price;
+   @OneToMany(cascade = CascadeType.ALL , orphanRemoval = true, mappedBy = "product")
+    private List<ProductImage> images;
+   @OneToMany(cascade = CascadeType.ALL , orphanRemoval = true, mappedBy = "product")
+   private List<ProductVariant> variants;
     private String category;
-    private String imageUrl;
-    private double price;
-
+    private String subCategory;
+    private List<String> sizes;
+    private List<String> colors;
+    private String material;
+    private String fit;
+    private String pattern;
+    private Double averageRating;
+    private Integer totalReviews;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private boolean isActive;
 }

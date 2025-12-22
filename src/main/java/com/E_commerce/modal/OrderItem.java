@@ -19,14 +19,18 @@ public class OrderItem {
     private Long id;
     private BigDecimal price;
     private long quantity;
+
+    private String size;
+    private String color;
     private BigDecimal lineTotal;
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
-    @ManyToOne
+    @ManyToOne(fetch =FetchType.LAZY)
+    @JoinColumn(name = "product_variant_id")
+    private ProductVariant variant;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
 
 }

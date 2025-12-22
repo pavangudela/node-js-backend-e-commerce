@@ -1,4 +1,5 @@
 package com.E_commerce.controller;
+import com.E_commerce.dto.ProductResponse;
 import com.E_commerce.modal.Product;
 import com.E_commerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +14,16 @@ public class ProductController {
     @Autowired
     private ProductService service;
     @GetMapping
-    public List<Product> getProducts(){
+    public ResponseEntity<List<ProductResponse>> getProducts(){
         return service.getProducts();
     }
     @GetMapping ("/{productId}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long productId){
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId){
         return service.getProductById(productId);
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/product/add")
-    public ResponseEntity<Product>  addProduct(@RequestBody Product product) {
+    public ResponseEntity<ProductResponse>  addProduct(@RequestBody Product product) {
 
         return service.addProduct(product);
     }
@@ -33,7 +34,7 @@ public class ProductController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/product/update/{productId}")
-    public  ResponseEntity<Product> updateProduct(  @PathVariable Long productId,  @RequestBody Product product){
+    public  ResponseEntity<ProductResponse> updateProduct(@PathVariable Long productId, @RequestBody Product product){
         return service.updateProduct(productId,product);
     }
 
