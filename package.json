@@ -1,0 +1,44 @@
+{
+  "name": "e-commerce-node-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Production-ready Node.js, Express, Sequelize, and MySQL e-commerce backend.",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo",
+    "db:seed": "sequelize-cli db:seed:all",
+    "lint": "eslint src --ext .js",
+    "admin-seeder": "node src/seeders/adminSeeder.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.5.1",
+    "compression": "^1.7.5",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.11.5",
+    "nodemailer": "^6.9.16",
+    "razorpay": "^2.9.5",
+    "sequelize": "^6.37.5",
+    "sequelize-cli": "^6.6.2",
+    "slugify": "^1.6.6",
+    "uuid": "^11.0.3",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.17.0",
+    "nodemon": "^3.1.9"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

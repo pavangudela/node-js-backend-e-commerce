@@ -1,0 +1,208 @@
+{
+  "info": {
+    "name": "Production E-Commerce API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Generated from actual Express routes, controllers, services, and Joi validators."
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "customerToken", "value": "" },
+    { "key": "brandId", "value": "1" },
+    { "key": "categoryId", "value": "1" },
+    { "key": "subcategoryId", "value": "1" },
+    { "key": "productId", "value": "1" },
+    { "key": "variantId", "value": "1" },
+    { "key": "addressId", "value": "1" },
+    { "key": "couponId", "value": "1" },
+    { "key": "orderId", "value": "1" }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('response is JSON when body exists', function () {",
+          "  if (pm.response.text()) pm.response.to.have.header('Content-Type');",
+          "});"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/auth/register", "body": { "mode": "raw", "raw": "{\n  \"username\": \"Pavan Customer\",\n  \"email\": \"customer@example.com\",\n  \"password\": \"Customer@12345\"\n}" } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('register created or duplicate handled', () => pm.expect([201,409]).to.include(pm.response.code));", "const json = pm.response.json();", "if (json.data) { pm.collectionVariables.set('accessToken', json.data.accessToken); pm.collectionVariables.set('customerToken', json.data.accessToken); pm.collectionVariables.set('refreshToken', json.data.refreshToken); }"] } }]
+        },
+        {
+          "name": "Login Customer",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/auth/login", "body": { "mode": "raw", "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"Customer@12345\"\n}" } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('login succeeds', () => pm.response.to.have.status(200));", "const json = pm.response.json();", "pm.collectionVariables.set('accessToken', json.data.accessToken);", "pm.collectionVariables.set('customerToken', json.data.accessToken);", "pm.collectionVariables.set('refreshToken', json.data.refreshToken);"] } }]
+        },
+        {
+          "name": "Login Admin",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/auth/login", "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin@12345\"\n}" } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('admin login succeeds', () => pm.response.to.have.status(200));", "const json = pm.response.json();", "pm.collectionVariables.set('adminToken', json.data.accessToken);"] } }]
+        },
+        { "name": "Refresh Token", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/auth/refresh", "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" } } },
+        { "name": "Logout", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/auth/logout", "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" } } },
+        { "name": "Forgot Password", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/auth/forgot-password", "body": { "mode": "raw", "raw": "{\n  \"email\": \"customer@example.com\"\n}" } } },
+        { "name": "Reset Password", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/auth/reset-password", "body": { "mode": "raw", "raw": "{\n  \"token\": \"reset-token\",\n  \"password\": \"NewPassword@123\"\n}" } } },
+        { "name": "Verify Email", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/auth/verify-email", "body": { "mode": "raw", "raw": "{\n  \"token\": \"verification-token\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        { "name": "Health", "request": { "method": "GET", "url": "{{baseUrl}}/api/health" } }
+      ]
+    },
+    {
+      "name": "Brands",
+      "item": [
+        { "name": "List Brands", "request": { "method": "GET", "url": "{{baseUrl}}/api/catalog/brands?q=Nike&page=1&limit=20" } },
+        { "name": "Get Brand", "request": { "method": "GET", "url": "{{baseUrl}}/api/catalog/brands/{{brandId}}" } },
+        {
+          "name": "Create Brand",
+          "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/catalog/brands", "body": { "mode": "raw", "raw": "{\n  \"name\": \"Nike\",\n  \"description\": \"Sportswear brand\",\n  \"logoUrl\": \"https://example.com/nike.png\",\n  \"logoPublicId\": \"brands/nike\",\n  \"isActive\": true\n}" } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('brand created', () => pm.expect([201,409]).to.include(pm.response.code));", "if (pm.response.code === 201) pm.collectionVariables.set('brandId', pm.response.json().data.id);"] } }]
+        },
+        { "name": "Update Brand", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/catalog/brands/{{brandId}}", "body": { "mode": "raw", "raw": "{\n  \"name\": \"Nike\",\n  \"description\": \"Updated brand\",\n  \"isActive\": true\n}" } } },
+        { "name": "Delete Brand", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/catalog/brands/{{brandId}}" } }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        { "name": "List Categories", "request": { "method": "GET", "url": "{{baseUrl}}/api/catalog/categories?q=Men&page=1&limit=20" } },
+        { "name": "Get Category", "request": { "method": "GET", "url": "{{baseUrl}}/api/catalog/categories/{{categoryId}}" } },
+        { "name": "Create Category", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/catalog/categories", "body": { "mode": "raw", "raw": "{\n  \"name\": \"Men\",\n  \"description\": \"Men fashion\",\n  \"isActive\": true\n}" } }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) pm.collectionVariables.set('categoryId', pm.response.json().data.id);"] } }] },
+        { "name": "Update Category", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/catalog/categories/{{categoryId}}", "body": { "mode": "raw", "raw": "{\n  \"name\": \"Men\",\n  \"description\": \"Updated category\",\n  \"isActive\": true\n}" } } },
+        { "name": "Delete Category", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/catalog/categories/{{categoryId}}" } }
+      ]
+    },
+    {
+      "name": "Subcategories",
+      "item": [
+        { "name": "List Subcategories", "request": { "method": "GET", "url": "{{baseUrl}}/api/catalog/subcategories?q=Running&page=1&limit=20" } },
+        { "name": "Get Subcategory", "request": { "method": "GET", "url": "{{baseUrl}}/api/catalog/subcategories/{{subcategoryId}}" } },
+        { "name": "Create Subcategory", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/catalog/subcategories", "body": { "mode": "raw", "raw": "{\n  \"categoryId\": {{categoryId}},\n  \"name\": \"Running Shoes\",\n  \"description\": \"Performance running shoes\",\n  \"isActive\": true\n}" } }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) pm.collectionVariables.set('subcategoryId', pm.response.json().data.id);"] } }] },
+        { "name": "Update Subcategory", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/catalog/subcategories/{{subcategoryId}}", "body": { "mode": "raw", "raw": "{\n  \"categoryId\": {{categoryId}},\n  \"name\": \"Running Shoes\",\n  \"description\": \"Updated subcategory\",\n  \"isActive\": true\n}" } } },
+        { "name": "Delete Subcategory", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/catalog/subcategories/{{subcategoryId}}" } }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        { "name": "Advanced Search", "request": { "method": "GET", "url": "{{baseUrl}}/api/products?q=shoe&brandId={{brandId}}&categoryId={{categoryId}}&subcategoryId={{subcategoryId}}&minPrice=1000&maxPrice=12000&sort=price_asc&page=1&limit=20" } },
+        { "name": "Get Product", "request": { "method": "GET", "url": "{{baseUrl}}/api/products/{{productId}}" } },
+        { "name": "Create Product", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/products", "body": { "mode": "raw", "raw": "{\n  \"brandId\": {{brandId}},\n  \"categoryId\": {{categoryId}},\n  \"subcategoryId\": {{subcategoryId}},\n  \"name\": \"Nike Air Zoom Pegasus\",\n  \"description\": \"Daily running shoe.\",\n  \"price\": 8999,\n  \"compareAtPrice\": 10999,\n  \"material\": \"Mesh\",\n  \"fit\": \"Regular\",\n  \"pattern\": \"Solid\",\n  \"sizes\": [\"8\", \"9\", \"10\"],\n  \"colors\": [\"Black\", \"White\"],\n  \"isActive\": true,\n  \"variants\": [{ \"sku\": \"NIKE-PEG-BLK-8\", \"color\": \"Black\", \"size\": \"8\", \"stock\": 25, \"isActive\": true }],\n  \"images\": [{ \"imageUrl\": \"https://example.com/nike-pegasus.jpg\", \"publicId\": \"products/nike-pegasus\", \"color\": \"Black\", \"isPrimary\": true, \"sortOrder\": 0 }]\n}" } }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) { const p = pm.response.json().data; pm.collectionVariables.set('productId', p.id); if (p.variants && p.variants[0]) pm.collectionVariables.set('variantId', p.variants[0].id); }"] } }] },
+        { "name": "Update Product", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/products/{{productId}}", "body": { "mode": "raw", "raw": "{\n  \"price\": 8499,\n  \"isActive\": true\n}" } } },
+        { "name": "Delete Product", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/products/{{productId}}" } }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        { "name": "List Reviews", "request": { "method": "GET", "url": "{{baseUrl}}/api/products/{{productId}}/reviews" } },
+        { "name": "Upsert Review", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/products/{{productId}}/reviews", "body": { "mode": "raw", "raw": "{\n  \"rating\": 5,\n  \"title\": \"Excellent shoes\",\n  \"comment\": \"Comfortable for daily running.\"\n}" } } },
+        { "name": "Delete My Review", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/products/{{productId}}/reviews/me" } }
+      ]
+    },
+    {
+      "name": "Addresses",
+      "item": [
+        { "name": "List Addresses", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/addresses" } },
+        { "name": "Get Default Address", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/addresses/default" } },
+        { "name": "Get Address", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/addresses/{{addressId}}" } },
+        { "name": "Create Address", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/shop/addresses", "body": { "mode": "raw", "raw": "{\n  \"name\": \"Pavan Kumar\",\n  \"contactNumber\": \"9876543210\",\n  \"pinCode\": \"560001\",\n  \"state\": \"Karnataka\",\n  \"area\": \"MG Road, Bengaluru\",\n  \"landMark\": \"Near Metro Station\",\n  \"buildingName\": \"A Block\",\n  \"isDefault\": true\n}" } }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) { const rows = pm.response.json().data; if (rows[0]) pm.collectionVariables.set('addressId', rows[0].id); }"] } }] },
+        { "name": "Update Address", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/shop/addresses/{{addressId}}", "body": { "mode": "raw", "raw": "{\n  \"name\": \"Pavan Kumar\",\n  \"contactNumber\": \"9876543210\",\n  \"pinCode\": \"560001\",\n  \"state\": \"Karnataka\",\n  \"area\": \"Indiranagar, Bengaluru\",\n  \"landMark\": \"Near Metro\",\n  \"buildingName\": \"B Block\",\n  \"isDefault\": true\n}" } } },
+        { "name": "Delete Address", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/addresses/{{addressId}}" } }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        { "name": "Get Cart", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/cart" } },
+        { "name": "Add Item", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/shop/cart/items", "body": { "mode": "raw", "raw": "{\n  \"productId\": {{productId}},\n  \"variantId\": {{variantId}},\n  \"qty\": 2\n}" } } },
+        { "name": "Update Item", "request": { "method": "PATCH", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/shop/cart/items", "body": { "mode": "raw", "raw": "{\n  \"variantId\": {{variantId}},\n  \"qty\": 1\n}" } } },
+        { "name": "Remove Item", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/cart/items/{{variantId}}" } },
+        { "name": "Clear Cart", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/cart" } }
+      ]
+    },
+    {
+      "name": "Wishlist",
+      "item": [
+        { "name": "List Wishlist", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/wishlist" } },
+        { "name": "Add Wishlist Item", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/wishlist/{{productId}}" } },
+        { "name": "Remove Wishlist Item", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/wishlist/{{productId}}" } }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        { "name": "Checkout", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/shop/orders", "body": { "mode": "raw", "raw": "{\n  \"paymentType\": \"COD\",\n  \"addressId\": {{addressId}},\n  \"couponCode\": \"WELCOME10\"\n}" } }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) pm.collectionVariables.set('orderId', pm.response.json().data.id);"] } }] },
+        { "name": "My Orders", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/orders/my" } },
+        { "name": "Get Order", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/api/shop/orders/{{orderId}}" } },
+        { "name": "Cancel Order Item", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/orders/{{orderId}}/items/1/cancel" } },
+        { "name": "All Orders", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/shop/orders" } },
+        { "name": "Update Order Status", "request": { "method": "PATCH", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/shop/orders/{{orderId}}/status", "body": { "mode": "raw", "raw": "{\n  \"status\": \"SHIPPED\"\n}" } } },
+        { "name": "Update Order Item Status", "request": { "method": "PATCH", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/shop/orders/{{orderId}}/items/1/status", "body": { "mode": "raw", "raw": "{\n  \"status\": \"SHIPPED\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Coupons",
+      "item": [
+        { "name": "List Coupons", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/coupons" } },
+        { "name": "Get Coupon", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/coupons/{{couponId}}" } },
+        { "name": "Create Coupon", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/admin/coupons", "body": { "mode": "raw", "raw": "{\n  \"code\": \"WELCOME10\",\n  \"description\": \"10 percent off\",\n  \"discountType\": \"PERCENTAGE\",\n  \"discountValue\": 10,\n  \"maxDiscountAmount\": 500,\n  \"minOrderAmount\": 1000,\n  \"usageLimit\": 100,\n  \"isActive\": true\n}" } }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) pm.collectionVariables.set('couponId', pm.response.json().data.id);"] } }] },
+        { "name": "Update Coupon", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/admin/coupons/{{couponId}}", "body": { "mode": "raw", "raw": "{\n  \"code\": \"WELCOME10\",\n  \"description\": \"10 percent off updated\",\n  \"discountType\": \"PERCENTAGE\",\n  \"discountValue\": 10,\n  \"maxDiscountAmount\": 500,\n  \"minOrderAmount\": 1000,\n  \"usageLimit\": 100,\n  \"isActive\": true\n}" } } },
+        { "name": "Delete Coupon", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/coupons/{{couponId}}" } }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        { "name": "Create Razorpay Order", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }], "url": "{{baseUrl}}/api/shop/payments/razorpay/{{orderId}}" } },
+        { "name": "Verify Razorpay Payment", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/shop/payments/verify", "body": { "mode": "raw", "raw": "{\n  \"orderId\": \"order_razorpay_id\",\n  \"paymentId\": \"pay_razorpay_id\",\n  \"signature\": \"hmac-signature\"\n}" } } },
+        { "name": "Razorpay Webhook", "request": { "method": "POST", "header": [{ "key": "x-razorpay-signature", "value": "signature" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/payments/webhook", "body": { "mode": "raw", "raw": "{\n  \"event\": \"payment.captured\",\n  \"payload\": { \"payment\": { \"entity\": { \"id\": \"pay_123\", \"order_id\": \"order_123\" } } }\n}" } } }
+      ]
+    },
+    {
+      "name": "Uploads",
+      "item": [
+        { "name": "Upload Product Image", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/uploads/product-images", "body": { "mode": "formdata", "formdata": [{ "key": "image", "type": "file", "src": "" }] } } },
+        { "name": "Upload Brand Logo", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/uploads/brand-logos", "body": { "mode": "formdata", "formdata": [{ "key": "image", "type": "file", "src": "" }] } } }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        { "name": "Admin Dashboard", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/dashboard" } }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        { "name": "Profile", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/api/users/me" } },
+        { "name": "Change Username", "request": { "method": "PATCH", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/users/me/username", "body": { "mode": "raw", "raw": "{\n  \"username\": \"Pavan Updated\"\n}" } } },
+        { "name": "Change Password", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/users/me/change-password", "body": { "mode": "raw", "raw": "{\n  \"oldPassword\": \"Customer@12345\",\n  \"newPassword\": \"Customer@54321\"\n}" } } },
+        { "name": "List Users", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/users" } },
+        { "name": "Delete User", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/users/2" } }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        { "name": "Admin Change Username", "request": { "method": "PATCH", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/admin/me/username", "body": { "mode": "raw", "raw": "{\n  \"username\": \"Admin Updated\"\n}" } } }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "prod-ecommerce-env",
+  "name": "E-Commerce Prod",
+  "values": [
+    { "key": "baseUrl", "value": "https://api.example.com", "enabled": true },
+    { "key": "accessToken", "value": "", "enabled": true },
+    { "key": "refreshToken", "value": "", "enabled": true },
+    { "key": "adminToken", "value": "", "enabled": true },
+    { "key": "customerToken", "value": "", "enabled": true },
+    { "key": "brandId", "value": "", "enabled": true },
+    { "key": "categoryId", "value": "", "enabled": true },
+    { "key": "subcategoryId", "value": "", "enabled": true },
+    { "key": "productId", "value": "", "enabled": true },
+    { "key": "variantId", "value": "", "enabled": true },
+    { "key": "addressId", "value": "", "enabled": true },
+    { "key": "couponId", "value": "", "enabled": true },
+    { "key": "orderId", "value": "", "enabled": true }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_using": "Codex"
+}

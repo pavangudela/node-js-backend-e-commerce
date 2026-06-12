@@ -1,0 +1,724 @@
+openapi: 3.0.3
+info:
+  title: Production E-Commerce API
+  version: 1.0.0
+  description: Generated from the actual Express route tree, controllers, services, Joi validators, and Sequelize models.
+servers:
+  - url: http://localhost:5000/api
+    description: Local
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: Catalog
+  - name: Brands
+  - name: Categories
+  - name: Subcategories
+  - name: Products
+  - name: Reviews
+  - name: Addresses
+  - name: Cart
+  - name: Wishlist
+  - name: Orders
+  - name: Coupons
+  - name: Payments
+  - name: Uploads
+  - name: Dashboard
+  - name: Users
+  - name: Admin
+paths:
+  /health:
+    get:
+      tags: [Catalog]
+      security: []
+      summary: Health check
+      responses:
+        "200": { $ref: "#/components/responses/Success" }
+  /auth/register:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Register customer
+      requestBody: { $ref: "#/components/requestBodies/Register" }
+      responses:
+        "201": { $ref: "#/components/responses/AuthSuccess" }
+        "400": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
+  /auth/login:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Login
+      requestBody: { $ref: "#/components/requestBodies/Login" }
+      responses:
+        "200": { $ref: "#/components/responses/AuthSuccess" }
+        "401": { $ref: "#/components/responses/Error" }
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Rotate refresh token
+      requestBody: { $ref: "#/components/requestBodies/RefreshToken" }
+      responses:
+        "200": { $ref: "#/components/responses/AuthSuccess" }
+        "401": { $ref: "#/components/responses/Error" }
+  /auth/logout:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Revoke refresh token
+      requestBody: { $ref: "#/components/requestBodies/RefreshToken" }
+      responses:
+        "200": { $ref: "#/components/responses/Message" }
+  /auth/forgot-password:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Send password reset email
+      requestBody: { $ref: "#/components/requestBodies/ForgotPassword" }
+      responses:
+        "200": { $ref: "#/components/responses/Message" }
+  /auth/reset-password:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Reset password
+      requestBody: { $ref: "#/components/requestBodies/ResetPassword" }
+      responses:
+        "200": { $ref: "#/components/responses/Message" }
+        "400": { $ref: "#/components/responses/Error" }
+  /auth/verify-email:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Verify email
+      requestBody: { $ref: "#/components/requestBodies/Token" }
+      responses:
+        "200": { $ref: "#/components/responses/Message" }
+  /catalog/brands:
+    get:
+      tags: [Brands]
+      security: []
+      summary: Search brands
+      parameters: [ { $ref: "#/components/parameters/q" }, { $ref: "#/components/parameters/page" }, { $ref: "#/components/parameters/limit" } ]
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+    post:
+      tags: [Brands]
+      summary: Create brand
+      requestBody: { $ref: "#/components/requestBodies/Brand" }
+      responses: { "201": { $ref: "#/components/responses/Success" }, "401": { $ref: "#/components/responses/Error" }, "403": { $ref: "#/components/responses/Error" } }
+  /catalog/brands/{id}:
+    get:
+      tags: [Brands]
+      security: []
+      summary: Get brand
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "200": { $ref: "#/components/responses/Success" }, "404": { $ref: "#/components/responses/Error" } }
+    put:
+      tags: [Brands]
+      summary: Update brand
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      requestBody: { $ref: "#/components/requestBodies/Brand" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    delete:
+      tags: [Brands]
+      summary: Soft-delete brand
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "204": { description: No content } }
+  /catalog/categories:
+    get:
+      tags: [Categories]
+      security: []
+      summary: Search categories
+      parameters: [ { $ref: "#/components/parameters/q" }, { $ref: "#/components/parameters/page" }, { $ref: "#/components/parameters/limit" } ]
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+    post:
+      tags: [Categories]
+      summary: Create category
+      requestBody: { $ref: "#/components/requestBodies/Category" }
+      responses: { "201": { $ref: "#/components/responses/Success" } }
+  /catalog/categories/{id}:
+    get:
+      tags: [Categories]
+      security: []
+      summary: Get category
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    put:
+      tags: [Categories]
+      summary: Update category
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      requestBody: { $ref: "#/components/requestBodies/Category" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    delete:
+      tags: [Categories]
+      summary: Soft-delete category
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "204": { description: No content } }
+  /catalog/subcategories:
+    get:
+      tags: [Subcategories]
+      security: []
+      summary: Search subcategories
+      parameters: [ { $ref: "#/components/parameters/q" }, { $ref: "#/components/parameters/page" }, { $ref: "#/components/parameters/limit" } ]
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+    post:
+      tags: [Subcategories]
+      summary: Create subcategory
+      requestBody: { $ref: "#/components/requestBodies/Subcategory" }
+      responses: { "201": { $ref: "#/components/responses/Success" } }
+  /catalog/subcategories/{id}:
+    get:
+      tags: [Subcategories]
+      security: []
+      summary: Get subcategory
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    put:
+      tags: [Subcategories]
+      summary: Update subcategory
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      requestBody: { $ref: "#/components/requestBodies/Subcategory" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    delete:
+      tags: [Subcategories]
+      summary: Soft-delete subcategory
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "204": { description: No content } }
+  /products:
+    get:
+      tags: [Products]
+      security: []
+      summary: Advanced product search
+      parameters:
+        - { $ref: "#/components/parameters/q" }
+        - { name: brandId, in: query, schema: { type: integer } }
+        - { name: categoryId, in: query, schema: { type: integer } }
+        - { name: subcategoryId, in: query, schema: { type: integer } }
+        - { name: minPrice, in: query, schema: { type: number } }
+        - { name: maxPrice, in: query, schema: { type: number } }
+        - { name: sort, in: query, schema: { type: string, enum: [newest, price_asc, price_desc, rating_desc, name_asc] } }
+        - { $ref: "#/components/parameters/page" }
+        - { $ref: "#/components/parameters/limit" }
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+    post:
+      tags: [Products]
+      summary: Create product
+      requestBody: { $ref: "#/components/requestBodies/Product" }
+      responses: { "201": { $ref: "#/components/responses/Success" } }
+  /products/{id}:
+    get:
+      tags: [Products]
+      security: []
+      summary: Get product
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "200": { $ref: "#/components/responses/Success" }, "404": { $ref: "#/components/responses/Error" } }
+    put:
+      tags: [Products]
+      summary: Update product
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      requestBody: { $ref: "#/components/requestBodies/ProductUpdate" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    delete:
+      tags: [Products]
+      summary: Soft-delete product
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "204": { description: No content } }
+  /products/{productId}/reviews:
+    get:
+      tags: [Reviews]
+      security: []
+      summary: List product reviews
+      parameters: [ { $ref: "#/components/parameters/productId" } ]
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+    post:
+      tags: [Reviews]
+      summary: Create or update my review
+      parameters: [ { $ref: "#/components/parameters/productId" } ]
+      requestBody: { $ref: "#/components/requestBodies/Review" }
+      responses: { "201": { $ref: "#/components/responses/Success" } }
+  /products/{productId}/reviews/me:
+    delete:
+      tags: [Reviews]
+      summary: Delete my review
+      parameters: [ { $ref: "#/components/parameters/productId" } ]
+      responses: { "204": { description: No content } }
+  /shop/addresses:
+    get:
+      tags: [Addresses]
+      summary: List addresses
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+    post:
+      tags: [Addresses]
+      summary: Create address
+      requestBody: { $ref: "#/components/requestBodies/Address" }
+      responses: { "201": { $ref: "#/components/responses/ListSuccess" } }
+  /shop/addresses/default:
+    get:
+      tags: [Addresses]
+      summary: Get default address
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /shop/addresses/{id}:
+    get:
+      tags: [Addresses]
+      summary: Get owned address
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    put:
+      tags: [Addresses]
+      summary: Update address
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      requestBody: { $ref: "#/components/requestBodies/Address" }
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+    delete:
+      tags: [Addresses]
+      summary: Soft-delete address
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+  /shop/cart:
+    get:
+      tags: [Cart]
+      summary: Get cart
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    delete:
+      tags: [Cart]
+      summary: Clear cart
+      responses: { "204": { description: No content } }
+  /shop/cart/items:
+    post:
+      tags: [Cart]
+      summary: Add cart item
+      requestBody: { $ref: "#/components/requestBodies/CartItem" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    patch:
+      tags: [Cart]
+      summary: Update cart item quantity
+      requestBody: { $ref: "#/components/requestBodies/UpdateCartItem" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /shop/cart/items/{variantId}:
+    delete:
+      tags: [Cart]
+      summary: Remove cart item by variant
+      parameters: [ { name: variantId, in: path, required: true, schema: { type: integer } } ]
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /shop/orders:
+    get:
+      tags: [Orders]
+      summary: Admin list all orders
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+    post:
+      tags: [Orders]
+      summary: Checkout
+      requestBody: { $ref: "#/components/requestBodies/Checkout" }
+      responses: { "201": { $ref: "#/components/responses/Success" } }
+  /shop/orders/my:
+    get:
+      tags: [Orders]
+      summary: List my orders
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+  /shop/orders/{id}:
+    get:
+      tags: [Orders]
+      summary: Get order
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /shop/orders/{id}/status:
+    patch:
+      tags: [Orders]
+      summary: Admin update order status
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      requestBody: { $ref: "#/components/requestBodies/OrderStatus" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /shop/orders/{orderId}/items/{itemId}/cancel:
+    post:
+      tags: [Orders]
+      summary: Customer cancel order item
+      parameters: [ { name: orderId, in: path, required: true, schema: { type: integer } }, { name: itemId, in: path, required: true, schema: { type: integer } } ]
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /shop/orders/{orderId}/items/{itemId}/status:
+    patch:
+      tags: [Orders]
+      summary: Admin update order item status
+      parameters: [ { name: orderId, in: path, required: true, schema: { type: integer } }, { name: itemId, in: path, required: true, schema: { type: integer } } ]
+      requestBody: { $ref: "#/components/requestBodies/OrderStatus" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /shop/wishlist:
+    get:
+      tags: [Wishlist]
+      summary: List wishlist
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+  /shop/wishlist/{productId}:
+    post:
+      tags: [Wishlist]
+      summary: Add product to wishlist
+      parameters: [ { $ref: "#/components/parameters/productId" } ]
+      responses: { "201": { $ref: "#/components/responses/ListSuccess" } }
+    delete:
+      tags: [Wishlist]
+      summary: Remove product from wishlist
+      parameters: [ { $ref: "#/components/parameters/productId" } ]
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+  /shop/payments/razorpay/{orderId}:
+    post:
+      tags: [Payments]
+      summary: Create Razorpay order
+      parameters: [ { name: orderId, in: path, required: true, schema: { type: integer } } ]
+      responses: { "201": { $ref: "#/components/responses/Success" } }
+  /shop/payments/verify:
+    post:
+      tags: [Payments]
+      summary: Verify Razorpay payment
+      requestBody: { $ref: "#/components/requestBodies/PaymentVerify" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /payments/webhook:
+    post:
+      tags: [Payments]
+      security: []
+      summary: Razorpay webhook
+      parameters:
+        - name: x-razorpay-signature
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Current profile
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /users/me/username:
+    patch:
+      tags: [Users]
+      summary: Change username
+      requestBody: { $ref: "#/components/requestBodies/Username" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /users/me/change-password:
+    post:
+      tags: [Users]
+      summary: Change password
+      requestBody: { $ref: "#/components/requestBodies/ChangePassword" }
+      responses: { "200": { $ref: "#/components/responses/Message" } }
+  /admin/dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Admin dashboard metrics
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: Admin list users
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+  /admin/users/{id}:
+    delete:
+      tags: [Admin]
+      summary: Admin soft-delete user
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "204": { description: No content } }
+  /admin/coupons:
+    get:
+      tags: [Coupons]
+      summary: List coupons
+      responses: { "200": { $ref: "#/components/responses/ListSuccess" } }
+    post:
+      tags: [Coupons]
+      summary: Create coupon
+      requestBody: { $ref: "#/components/requestBodies/Coupon" }
+      responses: { "201": { $ref: "#/components/responses/Success" } }
+  /admin/coupons/{id}:
+    get:
+      tags: [Coupons]
+      summary: Get coupon
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    put:
+      tags: [Coupons]
+      summary: Update coupon
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      requestBody: { $ref: "#/components/requestBodies/Coupon" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+    delete:
+      tags: [Coupons]
+      summary: Soft-delete coupon
+      parameters: [ { $ref: "#/components/parameters/id" } ]
+      responses: { "204": { description: No content } }
+  /admin/uploads/product-images:
+    post:
+      tags: [Uploads]
+      summary: Upload product image
+      requestBody: { $ref: "#/components/requestBodies/ImageUpload" }
+      responses: { "201": { $ref: "#/components/responses/Success" } }
+  /admin/uploads/brand-logos:
+    post:
+      tags: [Uploads]
+      summary: Upload brand logo
+      requestBody: { $ref: "#/components/requestBodies/ImageUpload" }
+      responses: { "201": { $ref: "#/components/responses/Success" } }
+  /admin/me/username:
+    patch:
+      tags: [Admin]
+      summary: Admin change own username
+      requestBody: { $ref: "#/components/requestBodies/Username" }
+      responses: { "200": { $ref: "#/components/responses/Success" } }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    id: { name: id, in: path, required: true, schema: { type: integer } }
+    productId: { name: productId, in: path, required: true, schema: { type: integer } }
+    q: { name: q, in: query, schema: { type: string } }
+    page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+    limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+  requestBodies:
+    Register:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/RegisterRequest" } } }
+    Login:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/LoginRequest" } } }
+    RefreshToken:
+      required: true
+      content: { application/json: { schema: { type: object, required: [refreshToken], properties: { refreshToken: { type: string } } } } }
+    ForgotPassword:
+      required: true
+      content: { application/json: { schema: { type: object, required: [email], properties: { email: { type: string, format: email } } } } }
+    ResetPassword:
+      required: true
+      content: { application/json: { schema: { type: object, required: [token, password], properties: { token: { type: string }, password: { type: string, minLength: 8, maxLength: 72 } } } } }
+    Token:
+      required: true
+      content: { application/json: { schema: { type: object, required: [token], properties: { token: { type: string } } } } }
+    Brand:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/BrandInput" } } }
+    Category:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/CategoryInput" } } }
+    Subcategory:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/SubcategoryInput" } } }
+    Product:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/ProductInput" } } }
+    ProductUpdate:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/ProductInput" } } }
+    Review:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/ReviewInput" } } }
+    Address:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/AddressInput" } } }
+    CartItem:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/CartItemInput" } } }
+    UpdateCartItem:
+      required: true
+      content: { application/json: { schema: { type: object, required: [variantId, qty], properties: { variantId: { type: integer }, qty: { type: integer, minimum: 0, maximum: 10 } } } } }
+    Checkout:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/CheckoutInput" } } }
+    OrderStatus:
+      required: true
+      content: { application/json: { schema: { type: object, required: [status], properties: { status: { $ref: "#/components/schemas/OrderStatus" } } } } }
+    PaymentVerify:
+      required: true
+      content: { application/json: { schema: { type: object, required: [orderId, paymentId, signature], properties: { orderId: { type: string }, paymentId: { type: string }, signature: { type: string } } } } }
+    Coupon:
+      required: true
+      content: { application/json: { schema: { $ref: "#/components/schemas/CouponInput" } } }
+    Username:
+      required: true
+      content: { application/json: { schema: { type: object, required: [username], properties: { username: { type: string, minLength: 2, maxLength: 120 } } } } }
+    ChangePassword:
+      required: true
+      content: { application/json: { schema: { type: object, required: [oldPassword, newPassword], properties: { oldPassword: { type: string }, newPassword: { type: string, minLength: 8, maxLength: 72 } } } } }
+    ImageUpload:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required: [image]
+            properties:
+              image:
+                type: string
+                format: binary
+  responses:
+    Success:
+      description: Success
+      content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } }
+    ListSuccess:
+      description: List success
+      content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } }
+    AuthSuccess:
+      description: Auth success
+      content: { application/json: { schema: { $ref: "#/components/schemas/AuthEnvelope" } } }
+    Message:
+      description: Message response
+      content: { application/json: { schema: { type: object, properties: { success: { type: boolean }, message: { type: string } } } } }
+    Error:
+      description: Error response
+      content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+  schemas:
+    SuccessEnvelope:
+      type: object
+      properties: { success: { type: boolean }, data: { nullable: true } }
+    ErrorEnvelope:
+      type: object
+      properties:
+        success: { type: boolean, example: false }
+        error: { type: string }
+        details: { nullable: true }
+        path: { type: string }
+        timestamp: { type: string, format: date-time }
+    AuthEnvelope:
+      type: object
+      properties:
+        success: { type: boolean }
+        data:
+          type: object
+          properties:
+            user: { $ref: "#/components/schemas/User" }
+            accessToken: { type: string }
+            refreshToken: { type: string }
+    RegisterRequest:
+      type: object
+      required: [username, email, password]
+      properties:
+        username: { type: string, minLength: 2, maxLength: 120, example: Pavan Customer }
+        email: { type: string, format: email, example: customer@example.com }
+        password: { type: string, minLength: 8, maxLength: 72, example: Customer@12345 }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        username: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [ADMIN, CUSTOMER] }
+        isEmailVerified: { type: boolean }
+    BrandInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 140 }
+        description: { type: string, nullable: true }
+        logoUrl: { type: string, nullable: true }
+        logoPublicId: { type: string, nullable: true }
+        isActive: { type: boolean }
+    CategoryInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 140 }
+        description: { type: string, nullable: true }
+        isActive: { type: boolean }
+    SubcategoryInput:
+      type: object
+      required: [categoryId, name]
+      properties:
+        categoryId: { type: integer }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        isActive: { type: boolean }
+    ProductInput:
+      type: object
+      required: [categoryId, name, price, variants]
+      properties:
+        brandId: { type: integer, nullable: true }
+        categoryId: { type: integer }
+        subcategoryId: { type: integer, nullable: true }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        price: { type: number }
+        compareAtPrice: { type: number, nullable: true }
+        material: { type: string, nullable: true }
+        fit: { type: string, nullable: true }
+        pattern: { type: string, nullable: true }
+        sizes: { type: array, items: { type: string } }
+        colors: { type: array, items: { type: string } }
+        isActive: { type: boolean }
+        variants: { type: array, items: { $ref: "#/components/schemas/ProductVariantInput" } }
+        images: { type: array, items: { $ref: "#/components/schemas/ProductImageInput" } }
+    ProductVariantInput:
+      type: object
+      required: [color, size, stock]
+      properties:
+        id: { type: integer }
+        sku: { type: string, nullable: true }
+        color: { type: string }
+        size: { type: string }
+        stock: { type: integer, minimum: 0 }
+        isActive: { type: boolean }
+    ProductImageInput:
+      type: object
+      required: [imageUrl]
+      properties:
+        imageUrl: { type: string }
+        publicId: { type: string, nullable: true }
+        color: { type: string, nullable: true }
+        isPrimary: { type: boolean }
+        sortOrder: { type: integer, minimum: 0 }
+    ReviewInput:
+      type: object
+      required: [rating]
+      properties:
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        title: { type: string, maxLength: 160, nullable: true }
+        comment: { type: string, maxLength: 3000, nullable: true }
+    AddressInput:
+      type: object
+      required: [name, contactNumber, pinCode, state, area]
+      properties:
+        name: { type: string }
+        contactNumber: { type: string }
+        pinCode: { type: string }
+        state: { type: string }
+        area: { type: string }
+        landMark: { type: string, nullable: true }
+        buildingName: { type: string, nullable: true }
+        isDefault: { type: boolean }
+    CartItemInput:
+      type: object
+      required: [productId, variantId]
+      properties:
+        productId: { type: integer }
+        variantId: { type: integer }
+        qty: { type: integer, minimum: 1, maximum: 10, default: 1 }
+    CheckoutInput:
+      type: object
+      required: [paymentType, addressId]
+      properties:
+        paymentType: { type: string, enum: [COD, RAZORPAY] }
+        addressId: { type: integer }
+        couponCode: { type: string, nullable: true }
+    OrderStatus:
+      type: string
+      enum: [PLACED, PENDING, SHIPPED, DELIVERED, CANCELLED, RETURNED, REFUNDED]
+    CouponInput:
+      type: object
+      required: [code, discountType, discountValue]
+      properties:
+        code: { type: string, maxLength: 60 }
+        description: { type: string, nullable: true }
+        discountType: { type: string, enum: [PERCENTAGE, FIXED] }
+        discountValue: { type: number }
+        maxDiscountAmount: { type: number, nullable: true }
+        minOrderAmount: { type: number, default: 0 }
+        usageLimit: { type: integer, nullable: true }
+        startsAt: { type: string, format: date-time, nullable: true }
+        expiresAt: { type: string, format: date-time, nullable: true }
+        isActive: { type: boolean }
